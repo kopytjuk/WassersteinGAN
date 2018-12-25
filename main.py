@@ -16,7 +16,7 @@ import os
 import models.dcgan as dcgan
 import models.mlp as mlp
 
-if __name__=='__main__':
+if __name__=="__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
@@ -217,7 +217,11 @@ if __name__=='__main__':
             gen_iterations += 1
 
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
+<<<<<<< HEAD
                 % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
+=======
+                % (epoch, opt.niter, i, len(dataloader), gen_iterations,
+>>>>>>> 72853533a0eefbf091f6598841eb2d0d1ef871dc
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
             if gen_iterations % 500 == 0:
                 real_cpu = real_cpu.mul(0.5).add(0.5)
