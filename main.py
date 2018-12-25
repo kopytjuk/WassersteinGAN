@@ -217,7 +217,7 @@ if __name__=='__main__':
             gen_iterations += 1
 
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
-                % (epoch, opt.niter, i, len(dataloader), gen_iterations,
+                % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
             if gen_iterations % 500 == 0:
                 real_cpu = real_cpu.mul(0.5).add(0.5)
