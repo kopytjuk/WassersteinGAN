@@ -14,6 +14,8 @@ from torch.autograd import Variable
 import os
 import json
 
+from tensorboardX import SummaryWriter
+
 import models.dcgan as dcgan
 import models.mlp as mlp
 
@@ -156,6 +158,9 @@ if __name__=="__main__":
         optimizerD = optim.RMSprop(netD.parameters(), lr = opt.lrD)
         optimizerG = optim.RMSprop(netG.parameters(), lr = opt.lrG)
 
+
+    sum_writer = SummaryWriter(log_dir=os.path.join(opt.experiment, "logs"))
+
     gen_iterations = 0
     for epoch in range(opt.niter):
         data_iter = iter(dataloader)
@@ -225,13 +230,21 @@ if __name__=="__main__":
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
                 % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
-            if gen_iterations % 500 == 0:
+            if gen_iterations % 100 == 0:
                 real_cpu = real_cpu.mul(0.5).add(0.5)
                 vutils.save_image(real_cpu, '{0}/real_samples.png'.format(opt.experiment))
                 fake = netG(Variable(fixed_noise, volatile=True))
                 fake.data = fake.data.mul(0.5).add(0.5)
+
+                sum_writer.add_image("generated-samples", vutils.make_grid(fake.data), gen_iterations)
                 vutils.save_image(fake.data, '{0}/fake_samples_{1}.png'.format(opt.experiment, gen_iterations))
+            
+            sum_writer.add_scalar("Loss_G", errG.data[0], gen_iterations)
+            sum_writer.add_scalar("Loss_D", errD.data[0], gen_iterations)
+            
 
         # do checkpointing
         torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
         torch.save(netD.state_dict(), '{0}/netD_epoch_{1}.pth'.format(opt.experiment, epoch))
+
+    sum_writer.close()
