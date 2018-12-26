@@ -12,11 +12,16 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
 import os
+import json
 
 import models.dcgan as dcgan
 import models.mlp as mlp
 
+<<<<<<< HEAD
 if __name__=='__main__':
+=======
+if __name__=="__main__":
+>>>>>>> generate-images-script
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
@@ -98,6 +103,14 @@ if __name__=='__main__':
     nc = int(opt.nc)
     n_extra_layers = int(opt.n_extra_layers)
 
+<<<<<<< HEAD
+=======
+    # write out generator config to generate images together wth training checkpoints (.pth)
+    generator_config = {"imageSize": opt.imageSize, "nz": nz, "nc": nc, "ngf": ngf, "ngpu": ngpu, "n_extra_layers": n_extra_layers, "noBN": opt.noBN, "mlp_G": opt.mlp_G}
+    with open(os.path.join(opt.experiment, "generator_config.json"), 'w') as gcfg:
+        gcfg.write(json.dumps(generator_config)+"\n")
+
+>>>>>>> generate-images-script
     # custom weights initialization called on netG and netD
     def weights_init(m):
         classname = m.__class__.__name__
@@ -114,6 +127,14 @@ if __name__=='__main__':
     else:
         netG = dcgan.DCGAN_G(opt.imageSize, nz, nc, ngf, ngpu, n_extra_layers)
 
+<<<<<<< HEAD
+=======
+    # write out generator config to generate images together wth training checkpoints (.pth)
+    generator_config = {"imageSize": opt.imageSize, "nz": nz, "nc": nc, "ngf": ngf, "ngpu": ngpu, "n_extra_layers": n_extra_layers, "noBN": opt.noBN, "mlp_G": opt.mlp_G}
+    with open(os.path.join(opt.experiment, "generator_config.json"), 'w') as gcfg:
+        gcfg.write(json.dumps(generator_config)+"\n")
+
+>>>>>>> generate-images-script
     netG.apply(weights_init)
     if opt.netG != '': # load checkpoint if needed
         netG.load_state_dict(torch.load(opt.netG))
@@ -217,7 +238,11 @@ if __name__=='__main__':
             gen_iterations += 1
 
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
+<<<<<<< HEAD
                 % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
+=======
+                % (epoch, opt.niter, i, len(dataloader), gen_iterations,
+>>>>>>> generate-images-script
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
             if gen_iterations % 500 == 0:
                 real_cpu = real_cpu.mul(0.5).add(0.5)
