@@ -48,12 +48,15 @@ if __name__=="__main__":
     parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
     parser.add_argument('--experiment', default=None, help='Where to store samples and models')
     parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
+    parser.add_argument('--save-image-modulo', dest="save_img_modulo", type=int, default=100, help='Number generator iterations before writing training results to disk.')
     opt = parser.parse_args()
     print(opt)
 
     if opt.experiment is None:
         opt.experiment = 'samples'
-    os.system('mkdir {0}'.format(opt.experiment))
+
+    os.makedirs(opt.experiment, exist_ok=True)
+    os.makedirs(os.path.join(opt.experiment, 'checkpoints'), exist_ok=True)
 
     opt.manualSeed = random.randint(1, 10000) # fix seed
     print("Random Seed: ", opt.manualSeed)
@@ -230,21 +233,22 @@ if __name__=="__main__":
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
                 % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
-            if gen_iterations % 100 == 0:
+    
+            if (gen_iterations % opt.save_img_modulo) == 0:
                 real_cpu = real_cpu.mul(0.5).add(0.5)
-                vutils.save_image(real_cpu, '{0}/real_samples.png'.format(opt.experiment))
+
                 fake = netG(Variable(fixed_noise, volatile=True))
                 fake.data = fake.data.mul(0.5).add(0.5)
 
                 sum_writer.add_image("generated-samples", vutils.make_grid(fake.data), gen_iterations)
-                vutils.save_image(fake.data, '{0}/fake_samples_{1}.png'.format(opt.experiment, gen_iterations))
+                sum_writer.add_image("real-samples", vutils.make_grid(real_cpu), gen_iterations)
             
             sum_writer.add_scalar("Loss_G", errG.data[0], gen_iterations)
             sum_writer.add_scalar("Loss_D", errD.data[0], gen_iterations)
             
 
         # do checkpointing
-        torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
-        torch.save(netD.state_dict(), '{0}/netD_epoch_{1}.pth'.format(opt.experiment, epoch))
+        torch.save(netG.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netG_epoch_%03d.pth'%(epoch+1)))
+        torch.save(netD.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netD_epoch_%03d.pth'%(epoch+1)))
 
     sum_writer.close()
