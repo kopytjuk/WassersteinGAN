@@ -50,6 +50,7 @@ if __name__=="__main__":
     parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
     parser.add_argument('--save-image-modulo', dest="save_img_modulo", type=int, default=100, help='Number generator iterations before writing training results to disk.')
     parser.add_argument('--save-model-modulo', dest="save_model_modulo", type=int, default=100, help='Number generator iterations before writing model weights to disk.')
+    parser.add_argument('--display-gradients_modulo', dest="display_grads_mod", type=int, default=100, help='Number generator iterations before writing model weights gradients to Tensorboard.')
     opt = parser.parse_args()
     print(opt)
 
@@ -246,6 +247,18 @@ if __name__=="__main__":
             
             sum_writer.add_scalar("Loss_G", errG.data[0], gen_iterations)
             sum_writer.add_scalar("Loss_D", errD.data[0], gen_iterations)
+
+            # get gradients
+            netG_params = list(netG.parameters())
+            netD_params = list(netD.parameters())
+
+            # display gradients
+            if (gen_iterations%opt.display_grads_mod) == 0:
+                for i, p in enumerate(netG_params):
+                    sum_writer.add_histogram("netG_grad/param_%06d"%i, p.grad.data, gen_iterations)
+
+                for i, p in enumerate(netD_params):
+                    sum_writer.add_histogram("netD_grad/param_%06d"%i, p.grad.data, gen_iterations)
             
 
         # do checkpointing
