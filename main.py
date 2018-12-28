@@ -56,8 +56,8 @@ if __name__=="__main__":
     if opt.experiment is None:
         opt.experiment = 'samples'
 
-    os.makedirs(opt.experiment, exist_ok=True)
-    os.makedirs(os.path.join(opt.experiment, 'checkpoints'), exist_ok=True)
+    os.makedirs(opt.experiment, exist_ok=True, 777)
+    os.makedirs(os.path.join(opt.experiment, 'checkpoints'), exist_ok=True, 777)
 
     opt.manualSeed = random.randint(1, 10000) # fix seed
     print("Random Seed: ", opt.manualSeed)
