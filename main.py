@@ -49,6 +49,7 @@ if __name__=="__main__":
     parser.add_argument('--experiment', default=None, help='Where to store samples and models')
     parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
     parser.add_argument('--save-image-modulo', dest="save_img_modulo", type=int, default=100, help='Number generator iterations before writing training results to disk.')
+    parser.add_argument('--save-model-modulo', dest="save_model_modulo", type=int, default=100, help='Number generator iterations before writing model weights to disk.')
     opt = parser.parse_args()
     print(opt)
 
@@ -248,7 +249,8 @@ if __name__=="__main__":
             
 
         # do checkpointing
-        torch.save(netG.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netG_epoch_%03d.pth'%(epoch+1)))
-        torch.save(netD.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netD_epoch_%03d.pth'%(epoch+1)))
+        if (gen_iterations % opt.save_model_modulo) == 0:
+            torch.save(netG.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netG_epoch_%04d.pth'%(epoch+1)))
+            torch.save(netD.state_dict(), os.path.join(opt.experiment, 'checkpoints', 'netD_epoch_%04d.pth'%(epoch+1)))
 
     sum_writer.close()
