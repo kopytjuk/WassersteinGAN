@@ -166,11 +166,13 @@ if __name__=="__main__":
 
     sum_writer = SummaryWriter(log_dir=os.path.join(opt.experiment, "logs"))
 
+    num_batches = len(dataloader)
+
     gen_iterations = 0
     for epoch in range(opt.niter):
         data_iter = iter(dataloader)
         i = 0
-        while i < len(dataloader):
+        while i < num_batches:
             ############################
             # (1) Update D network
             ###########################
@@ -183,7 +185,7 @@ if __name__=="__main__":
             else:
                 Diters = opt.Diters
             j = 0
-            while j < Diters and i < len(dataloader):
+            while j < Diters and i < num_batches:
                 j += 1
 
                 # clamp parameters to a cube
