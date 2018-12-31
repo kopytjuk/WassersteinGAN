@@ -235,7 +235,7 @@ if __name__=="__main__":
             gen_iterations += 1
 
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
-                % (epoch+1, opt.niter, i, len(dataloader), gen_iterations,
+                % (epoch+1, opt.niter, i, num_batches, gen_iterations,
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
     
             if (gen_iterations % opt.save_img_modulo) == 0:
@@ -256,11 +256,11 @@ if __name__=="__main__":
 
             # display gradients
             if (gen_iterations%opt.display_grads_mod) == 0:
-                for i, p in enumerate(netG_params):
-                    sum_writer.add_histogram("netG_grad/param_%06d"%i, p.grad.data, gen_iterations)
+                for i_p, p in enumerate(netG_params):
+                    sum_writer.add_histogram("netG_grad/param_%06d"%i_p, p.grad.data, gen_iterations)
 
-                for i, p in enumerate(netD_params):
-                    sum_writer.add_histogram("netD_grad/param_%06d"%i, p.grad.data, gen_iterations)
+                for i_p, p in enumerate(netD_params):
+                    sum_writer.add_histogram("netD_grad/param_%06d"%i_p, p.grad.data, gen_iterations)
             
 
         # do checkpointing
