@@ -87,8 +87,8 @@ class DCGAN_G(nn.Module):
         for t in range(n_extra_layers):
             main.add_module('extra-layers-{0}:{1}:conv'.format(t, cngf),
                             nn.Conv2d(cngf, cngf, 3, 1, 1, bias=False))
-            main.add_module('extra-layers-{0}:{1}:batchnorm'.format(t, cngf),
-                            nn.BatchNorm2d(cngf))
+            # main.add_module('extra-layers-{0}:{1}:batchnorm'.format(t, cngf),
+            #                 nn.BatchNorm2d(cngf))
             main.add_module('extra-layers-{0}:{1}:relu'.format(t, cngf),
                             nn.ReLU(True))
 
