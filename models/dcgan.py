@@ -103,7 +103,15 @@ class DCGAN_G(nn.Module):
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else: 
             output = self.main(input)
-        return output 
+        return output
+
+    def get_layer_features(self, x, extracted_layer_prefix):
+        outputs = {}
+        for name, module in self.main._modules.items():
+            x = module(x)
+            if extracted_layer_prefix in name:
+                outputs[name] = x
+        return outputs
 ###############################################################################
 class DCGAN_D_nobn(nn.Module):
     def __init__(self, isize, nz, nc, ndf, ngpu, n_extra_layers=0):

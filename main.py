@@ -51,6 +51,7 @@ if __name__=="__main__":
     parser.add_argument('--save-image-modulo', dest="save_img_modulo", type=int, default=100, help='Number generator iterations before writing training results to disk.')
     parser.add_argument('--save-model-modulo', dest="save_model_modulo", type=int, default=100, help='Number generator iterations before writing model weights to disk.')
     parser.add_argument('--display-gradients_modulo', dest="display_grads_mod", type=int, default=100, help='Number generator iterations before writing model weights gradients to Tensorboard.')
+    parser.add_argument('--debug_extra_layers', action='store_true', help='Save extra layers feature map of the first sample of the first channel to TensorBoard.')
     opt = parser.parse_args()
     print(opt)
 
@@ -229,6 +230,7 @@ if __name__=="__main__":
             noise.resize_(opt.batchSize, nz, 1, 1).normal_(0, 1)
             noisev = Variable(noise)
             fake = netG(noisev)
+
             errG = netD(fake)
             errG.backward(one)
             optimizerG.step()
@@ -246,7 +248,13 @@ if __name__=="__main__":
 
                 sum_writer.add_image("generated-samples", vutils.make_grid(fake.data), gen_iterations)
                 sum_writer.add_image("real-samples", vutils.make_grid(real_cpu), gen_iterations)
-            
+
+                if opt.debug_extra_layers:
+                    extra_layer_dict = netG.get_layer_features(noisev, "extra-layers-")
+                    for name_layer, out_layer in extra_layer_dict.items():
+                        out_layer_first = out_layer[0, 0, ...]
+                        sum_writer.add_image("extra/"+name_layer, out_layer_first, gen_iterations)
+
             sum_writer.add_scalar("Loss_G", errG.data[0], gen_iterations)
             sum_writer.add_scalar("Loss_D", errD.data[0], gen_iterations)
 
